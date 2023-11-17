@@ -5,7 +5,8 @@ function Upload() {
   const [payloadImages, setPayloadImages] = useState(null);
   const [imageData, setImageData] = useState([]);
   const [personCount, setPersonCount] = useState(1);
-
+  const [email, setEmail] = useState();
+  const [payloadEmail, setPayLoadEmail] = useState(null);
   const getFile = (e) => {
     e.preventDefault();
 
@@ -63,6 +64,21 @@ function Upload() {
     setImageData([...response.data]);
   };
 
+  const getEmail = (e) => {
+    e.preventDefault();
+    setEmail(e.target.value);
+  };
+
+  const emailClickHandler = async (imageArray) => {
+    const emailFormData = new FormData();
+    emailFormData.append("email", email);
+    emailFormData.append("imageArray", imageArray);
+    const response = await axios.post(
+      "http://127.0.0.1:8000/sendingMail",
+      emailFormData
+    );
+  };
+
   useEffect(() => {
     console.log(imageData);
   }, [imageData]);
@@ -93,11 +109,17 @@ function Upload() {
                 display: "flex",
               }}
             >
-              {imageArray.map((image, index) => (
-                <div key={`image-${index}`}>
-                  <img src={`http://127.0.0.1:8000/static/${image}`} />
-                </div>
-              ))}
+              {imageArray.map((image, index) => {
+                return (
+                  <div key={`image-${index}`}>
+                    <img src={`http://127.0.0.1:8000/static/${image}`} />
+                  </div>
+                );
+              })}
+              <input type="email" onChange={getEmail} />
+              <button onClick={() => emailClickHandler(imageArray)}>
+                전송
+              </button>
             </div>
           );
         })}
